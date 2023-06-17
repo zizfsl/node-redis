@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Data</title>
+  <style>
+    /* Add your custom CSS styles here */
+  </style>
+</head>
+<body>
+  <h1>User Data</h1>
+
+  <div id="userData"></div>
+
+  <script>
+	window.addEventListener('DOMContentLoaded', () => {
+  const userDataDiv = document.getElementById('userData');
+
+  // Fetch user data from the backend
+  fetch('/users')
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        const { Name, Age, Email, City } = data;
+        const userDataHTML = `
+          <p><strong>Name:</strong> ${Name}</p>
+          <p><strong>Age:</strong> ${Age}</p>
+          <p><strong>Email:</strong> ${Email}</p>
+          <p><strong>City:</strong> ${City}</p>
+        `;
+        userDataDiv.innerHTML = userDataHTML;
+      } else {
+        userDataDiv.innerHTML = '<p>No user data found.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error retrieving user data:', error);
+      userDataDiv.innerHTML = '<p>Error retrieving user data.</p>';
+    });
+});
+  </script>
+</body>
+</html>
