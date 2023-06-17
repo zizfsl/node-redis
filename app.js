@@ -22,13 +22,16 @@ app.get('/', (req, res) => {
 app.post('/users', (req, res) => {
   const { name, age, email, city } = req.body;
 
+  // Generate a unique key for the user
+  const userKey = `user:${Date.now()}`;
+
   // Save user data to Redis
-  redisClient.hmset('user', ['Name', name, 'Age', age, 'Email', email, 'City', city], (err) => {
+  redisClient.hmset(userKey, ['Name', name, 'Age', age, 'Email', email, 'City', city], (err) => {
     if (err) {
       console.error('Error saving user data to Redis:', err);
       res.status(500).send('Error saving user data to Redis');
     } else {
-      console.log('User data saved to Redis');
+      console.log(`User data saved to Redis with key: ${userKey}`);
       res.send('User data saved to Redis');
     }
   });

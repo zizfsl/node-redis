@@ -18,15 +18,39 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend.html'));
 });
 
-// Define a route to retrieve user data from Redis
+// Define a route to handle user input and save it to Redis
+app.post('/users', (req, res) => {
+  // ...existing code to save user data to Redis...
+});
+
+// Define a route to retrieve all user data from Redis
 app.get('/users', (req, res) => {
-  redisClient.hgetall('user', (err, userData) => {
+  // Retrieve all user keys from Redis
+  redisClient.keys('user:*', (err, keys) => {
     if (err) {
       console.error('Error retrieving user data from Redis:', err);
       res.status(500).json({ error: 'Error retrieving user data from Redis' });
-    } else {
-      res.json(userData);
+      return;
     }
+
+    // Fetch user data for each key
+    const users = [];
+    keys.forEach((key) => {
+      redisClient.hgetall(key, (err, userData) => {
+        if (err) {
+          console.error('Error retrieving user data from Redis:', err);
+          res.status(500).json({ error: 'Error retrieving user data from Redis' });
+          return;
+        }
+
+        users.push(userData);
+
+        // Send the users data as JSON when all user data has been retrieved
+        if (users.length === keys.length) {
+          res.json(users);
+        }
+      });
+    });
   });
 });
 
